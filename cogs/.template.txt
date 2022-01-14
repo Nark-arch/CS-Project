@@ -7,9 +7,9 @@ class x(commands.Cog): #creates a class that inherits from commands.cog
     
     #commands
     @commands.command() 
-    async def cmnd_name(self, ctx): #command called ping
-         await ctx.send(f'msg here') #responds with pong when triggered
+    async def cmnd_name(self, ctx): #command called the command name
+         await ctx.send(f'msg here') #responds with msg when triggered
 
 
 def setup(client): #sets up the client object
-    client.add_cog(x(client)) #runs a client method and passes this class i.e command into the bot object
+    client.add_cog(cmd_name(client)) #runs a client method and passes this class i.e command into the bot object
