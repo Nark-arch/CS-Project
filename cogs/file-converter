@@ -1,0 +1,47 @@
+from importlib import import_module
+import discord
+import cloudconvert
+from discord.ext import commands, tasks
+
+cloudconvert.configure(api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZDVjZGNhMzI4MjIxN2JiOGJlMzFmNWYzZjBkNzY3M2Q3ZWVmOTlhYTRkOGQ1NmRkNzJhODNhNGY5ZTY2ZTBiNGJmNTE2N2M4YzgzYWY3ZDYiLCJpYXQiOjE2NDM2NTMzMDMuNjYyMDEzLCJuYmYiOjE2NDM2NTMzMDMuNjYyMDE1LCJleHAiOjQ3OTkzMjY5MDMuNjU0Mzg3LCJzdWIiOiI1NTk4OTg0OSIsInNjb3BlcyI6WyJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIiwid2ViaG9vay53cml0ZSIsIndlYmhvb2sucmVhZCJdfQ.hb2MPoYN_KoQL_Bai9PL-_2EA4meD15bQKVTlZyKnF_QsRP4qvHvr2mAgvcgy5E27Ru9AJ-bSQ7nZVlsXY3m8k-B4bdCr_18ij48PWg1JJTzfrGucjg5SC4OTeeu4PjQiM4GKs_hOnnXNW4Tw6hd-_VZKkNAnATZSCSePuvqd83cxi6N6XfgUF71ysuQFzXYK-rAO47B31cFqSH_DHCvLgTFRkysiFplltVzFiZprRZUuZxdGsLZ8cn0yGyoCEaTQyqHEbp-XghJt_gEAMeJVY2M6hNUCD2zXCHokik7YKYaVdftY6Wg89KelInzzc5qKvBCYcIQMwdLztoC_byaHoWMp8s619KDuRnvTeyUnh-y1OWoI1TUtzSmzQFsUVgrEnFxEhk88JKm1jQVgEZyp36yMilTID0iEdYKik-uTa487aYUcIZakYf5ih7LkvtbY9wjb9Ji1cssgc9cmFw2nafiU9yi3r55CtHxEdpmU23zeZL2fkrd0ArKe4GUs9WH9oTcYoru-VYUibfjQ5_tmmg_PS2d1UKf_S13IoNuF4jHz_8o4jr9nOxoauNa_BxnEC1DCk3xnwEvHiiTxpkpTtsHw-ntQprRjIpVE8wmYOq7J3iyPJ_VPhmrfv1v6TB4_klYSfcdw4Fh3Bljv_GEX0tjNDqMC65IozFILrw3SGw')
+
+class file_converter(commands.Cog): #creates a class that inherits from commands.cog
+    def __init__(self, client): #client created in main passed in
+        self.client = client #lets us initialize the client object here
+    
+    #commands
+    @commands.command() 
+    async def convert(self, ctx): #command called the command name
+        attachment1 = ctx.message.attachments[0]
+        
+        cloudconvert.Job.create(payload={
+            "tasks": {
+                'import-my-file': {
+                    'operation': 'import/url',
+                    'url': f'{attachment1.url}'
+                },
+                'convert-my-file': {
+                    'operation': 'convert',
+                    'input': 'import-my-file',
+                    'output_format': 'pdf',
+                },
+                'export-my-file': {
+                    'operation': 'export/url',
+                    'input': 'convert-my-file'
+                }
+            }
+        })
+        
+        exported_url_task_id = "84e872fc-d823-4363-baab-eade2e05ee54"
+        res = cloudconvert.Task.wait(id=exported_url_task_id) # Wait for job completion
+        file = res.get("result").get("files")[0]
+        res = cloudconvert.download(filename=file['filename'], url=file['url'])
+        await ctx.send(f'{res}')
+
+
+
+
+
+
+def setup(client): #sets up the client object
+    client.add_cog(file_converter(client)) #runs a client method and passes this class i.e command into the bot object
