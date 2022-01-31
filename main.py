@@ -22,19 +22,19 @@ for filename in os.listdir('./cogs'): #returns list of filenames in the cogs fol
 @client.command()
 async def load(ctx, extension):
     client.load_extension(f'cogs.{extension}')
-    await ctx.send(f'Loaded {extension}')
+    await ctx.send(f'Loaded {extension} <@{ctx.author.id}>')
 
 #reloads command
 @client.command()
 async def reload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
     client.load_extension(f'cogs.{extension}')
-    await ctx.send(f'Reloaded {extension}')
+    await ctx.send(f'Reloaded {extension} <@{ctx.author.id}>')
 
 #unloads command
 @client.command()
 async def unload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
-    await ctx.send(f'Unloaded {extension}')
+    await ctx.send(f'Unloaded {extension} <@{ctx.author.id}>')
 
 client.run("ODkwODIyMTY4NDI0ODgyMTg2.YU1Yyw.IT_d72UIpUNLfgObDMjQ7g-YQ9c") #main token of the bot, is basically our password to discords api

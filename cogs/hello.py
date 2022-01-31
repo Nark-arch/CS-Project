@@ -9,7 +9,7 @@ class hello(commands.Cog): #creates a class that inherits from commands.cog
     #commands
     @commands.command() 
     async def Hello(self, ctx): #command called ping
-         await ctx.send(f'Hello!') #responds with pong when triggered
+        await ctx.send(f'Hello! <@{ctx.author.id}>') #responds with pong when triggered
 
 
 def setup(client): #sets up the client object
